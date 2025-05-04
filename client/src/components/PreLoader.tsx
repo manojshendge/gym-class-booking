@@ -13,65 +13,113 @@ const PreLoader = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Animation variants
+  const containerVariants = {
+    initial: { opacity: 1 },
+    exit: { 
+      opacity: 0,
+      transition: { 
+        duration: 0.8, 
+        ease: "easeInOut",
+        when: "afterChildren"
+      }
+    }
+  };
+
+  const logoVariants = {
+    initial: { opacity: 0, scale: 0.8, y: 20 },
+    animate: { 
+      opacity: 1, 
+      scale: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    },
+    exit: {
+      scale: 1.2,
+      opacity: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const barContainerVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: 0.3, 
+        duration: 0.5 
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: 20,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const dumbellVariants = {
+    initial: { opacity: 0 },
+    animate: { 
+      opacity: 0.7,
+      transition: { 
+        delay: 0.5, 
+        duration: 0.5 
+      }
+    }
+  };
+
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {loading && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black"
-          initial={{ opacity: 1 }}
-          exit={{ 
-            opacity: 0,
-            transition: { 
-              duration: 0.8, 
-              ease: "easeInOut" 
-            }
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-black to-[#121212]"
+          variants={containerVariants}
+          initial="initial"
+          exit="exit"
         >
           <div className="relative flex flex-col items-center">
             {/* Main Logo Animation */}
             <motion.div
               className="mb-12"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.5
-                }
-              }}
+              variants={logoVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
             >
-              <motion.div
-                className="text-5xl md:text-7xl font-poppins font-extrabold"
-                animate={{ 
-                  textShadow: [
-                    "0 0 0px rgba(57, 255, 20, 0)",
-                    "0 0 20px rgba(57, 255, 20, 0.8)",
-                    "0 0 5px rgba(57, 255, 20, 0.5)"
-                  ]
-                }}
-                transition={{ 
-                  repeat: Infinity,
-                  duration: 2,
-                  repeatType: "reverse"
-                }}
-              >
+              <div className="text-5xl md:text-7xl font-poppins font-extrabold preloader-glow">
                 <span className="text-[#39FF14]">BEAST</span>
                 <span className="text-white">MODE</span>
+              </div>
+              
+              {/* Fitness tagline */}
+              <motion.div 
+                className="text-center mt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <span className="text-sm text-gray-400 tracking-widest">FITNESS REDEFINED</span>
               </motion.div>
             </motion.div>
 
             {/* Loading Bar */}
             <motion.div
-              className="w-60 md:w-80 h-2 bg-gray-800 rounded-full overflow-hidden"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ 
-                opacity: 1, 
-                y: 0,
-                transition: { delay: 0.3, duration: 0.5 }
-              }}
+              className="w-64 md:w-96 h-2 bg-gray-800 rounded-full overflow-hidden"
+              variants={barContainerVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
             >
               <motion.div
-                className="h-full bg-gradient-to-r from-[#39FF14] to-[#FF5500]"
+                className="h-full preloader-bar rounded-full"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ 
@@ -96,35 +144,51 @@ const PreLoader = () => {
               UNLEASHING THE BEAST
             </motion.p>
 
-            {/* Animated Dumbbells */}
-            <div className="absolute -top-20 right-0">
+            {/* Background Elements */}
+            <div className="absolute top-[-120px] right-[-50px]">
               <motion.div
-                animate={{ 
-                  rotate: [0, 10, -10, 0],
-                  y: [0, -10, 0]
-                }}
-                transition={{ 
-                  repeat: Infinity,
-                  duration: 2.5,
-                  ease: "easeInOut"
-                }}
+                className="preloader-float"
+                variants={dumbellVariants}
+                initial="initial"
+                animate="animate"
               >
-                <i className="fas fa-dumbbell text-[#FF5500] text-4xl opacity-70"></i>
+                <i className="fas fa-dumbbell text-[#FF5500] text-5xl opacity-30"></i>
               </motion.div>
             </div>
-            <div className="absolute -bottom-16 -left-10">
+            
+            <div className="absolute bottom-[-80px] left-[-100px]">
               <motion.div
-                animate={{ 
-                  rotate: [0, -10, 10, 0],
-                  y: [0, 10, 0]
-                }}
-                transition={{ 
-                  repeat: Infinity,
-                  duration: 3,
-                  ease: "easeInOut"
-                }}
+                className="preloader-float"
+                variants={dumbellVariants}
+                initial="initial"
+                animate="animate"
+                style={{ animationDelay: "0.3s" }}
               >
-                <i className="fas fa-dumbbell text-[#39FF14] text-3xl opacity-70"></i>
+                <i className="fas fa-dumbbell text-[#39FF14] text-4xl opacity-30"></i>
+              </motion.div>
+            </div>
+            
+            <div className="absolute top-[-50px] left-[-80px]">
+              <motion.div
+                className="preloader-float"
+                variants={dumbellVariants}
+                initial="initial"
+                animate="animate"
+                style={{ animationDelay: "0.6s" }}
+              >
+                <i className="fas fa-running text-[#0066FF] text-4xl opacity-30"></i>
+              </motion.div>
+            </div>
+            
+            <div className="absolute bottom-[-60px] right-[-70px]">
+              <motion.div
+                className="preloader-float"
+                variants={dumbellVariants}
+                initial="initial"
+                animate="animate"
+                style={{ animationDelay: "0.9s" }}
+              >
+                <i className="fas fa-heartbeat text-[#FF3A3A] text-4xl opacity-30"></i>
               </motion.div>
             </div>
           </div>
