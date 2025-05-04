@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User } from 'firebase/auth';
 import { useAuth } from '@/hooks/use-auth';
+import { Link, useLocation } from 'wouter';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,8 @@ export interface HeaderProps {
 const Header = ({ onLoginClick, user }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { logout } = useAuth();
+  const { logout, profile, hasAdminAccess } = useAuth();
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,9 +67,9 @@ const Header = ({ onLoginClick, user }: HeaderProps) => {
   return (
     <header className={`fixed w-full bg-black bg-opacity-90 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#" className="text-2xl md:text-3xl font-poppins font-bold">
+        <Link href="/" className="text-2xl md:text-3xl font-poppins font-bold">
           <span className="text-[#39FF14]">BEAST</span><span className="text-white">MODE</span>
-        </a>
+        </Link>
         
         <div className="hidden md:flex items-center space-x-8">
           <nav>
@@ -95,17 +97,17 @@ const Header = ({ onLoginClick, user }: HeaderProps) => {
                 <DropdownMenuContent align="end" className="bg-[#1A1A1A] border-[#333] text-white">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-[#333]" />
-                  <DropdownMenuItem className="hover:bg-[#222] cursor-pointer">
-                    <a href="#book-class" className="w-full">My Bookings</a>
+                  <DropdownMenuItem className="hover:bg-[#222] cursor-pointer" onClick={() => setLocation('/profile')}>
+                    <span className="w-full">My Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-[#222] cursor-pointer">
-                    Profile Settings
-                  </DropdownMenuItem>
-                  {user && (
-                    <DropdownMenuItem className="hover:bg-[#222] cursor-pointer">
-                      <a href="#analytics" className="w-full">Analytics Dashboard</a>
+                  {hasAdminAccess() && (
+                    <DropdownMenuItem className="hover:bg-[#222] cursor-pointer" onClick={() => setLocation('/analytics')}>
+                      <span className="w-full">Analytics Dashboard</span>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem className="hover:bg-[#222] cursor-pointer" onClick={() => setLocation('/')}>
+                    <span className="w-full">Return to Home</span>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-[#333]" />
                   <DropdownMenuItem className="hover:bg-[#222] cursor-pointer" onClick={handleLogout}>
                     Logout
@@ -150,9 +152,32 @@ const Header = ({ onLoginClick, user }: HeaderProps) => {
           {user ? (
             <>
               <div className="border-t border-[#333] my-2 pt-2"></div>
-              <a href="#book-class" className="text-lg py-2 px-4 hover:bg-black rounded transition-colors" onClick={() => setMobileMenuOpen(false)}>My Bookings</a>
-              <a href="#analytics" className="text-lg py-2 px-4 hover:bg-black rounded transition-colors" onClick={() => setMobileMenuOpen(false)}>Analytics</a>
-              <button onClick={handleLogout} className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors">Logout</button>
+              <button 
+                className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors w-full text-left" 
+                onClick={() => { setLocation('/profile'); setMobileMenuOpen(false); }}
+              >
+                My Profile
+              </button>
+              {hasAdminAccess() && (
+                <button 
+                  className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors w-full text-left" 
+                  onClick={() => { setLocation('/analytics'); setMobileMenuOpen(false); }}
+                >
+                  Analytics Dashboard
+                </button>
+              )}
+              <button 
+                className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors w-full text-left" 
+                onClick={() => { setLocation('/'); setMobileMenuOpen(false); }}
+              >
+                Return to Home
+              </button>
+              <button 
+                onClick={() => { handleLogout(); setMobileMenuOpen(false); }} 
+                className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors"
+              >
+                Logout
+              </button>
             </>
           ) : (
             <button onClick={() => { onLoginClick?.(); setMobileMenuOpen(false); }} className="text-lg py-2 px-4 text-left hover:bg-black rounded transition-colors">
