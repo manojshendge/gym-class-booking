@@ -8,6 +8,8 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import PreLoader from "@/components/PreLoader";
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthProvider } from "@/hooks/use-auth";
+import { trackEvent } from "@/lib/firebase";
 
 function Router() {
   return (
@@ -22,6 +24,7 @@ function Router() {
 
 function App() {
   const [appReady, setAppReady] = useState(false);
+  const [firebaseConfigured, setFirebaseConfigured] = useState(false);
 
   useEffect(() => {
     // Optional: Wait for fonts and resources to load
@@ -41,21 +44,51 @@ function App() {
     };
   }, []);
 
+  // Check if Firebase is configured
+  useEffect(() => {
+    const checkFirebaseConfig = async () => {
+      try {
+        const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+        const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+
+        if (apiKey && projectId && appId) {
+          setFirebaseConfigured(true);
+          
+          // Track page view for analytics
+          try {
+            trackEvent('page_view', { page_path: window.location.pathname });
+          } catch (error) {
+            console.warn('Analytics tracking not available');
+          }
+        } else {
+          console.warn('Firebase configuration missing. Some features will be unavailable.');
+        }
+      } catch (error) {
+        console.warn('Firebase initialization error', error);
+      }
+    };
+
+    checkFirebaseConfig();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <PreLoader />
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: 1,
-            transition: { delay: 2.8, duration: 0.5 } 
-          }}
-        >
-          <Router />
-        </motion.div>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <PreLoader />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: 1,
+              transition: { delay: 2.8, duration: 0.5 } 
+            }}
+          >
+            <Router />
+          </motion.div>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
