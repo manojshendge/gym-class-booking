@@ -12,6 +12,7 @@ export interface Benefit {
   iconColor: string;
   title: string;
   description: string;
+  animation?: any; // Animation variant from framer-motion
 }
 
 // Classes section data
