@@ -16,6 +16,7 @@ type UserProfile = {
   email: string;
   membershipType?: 'Basic' | 'Premium' | 'Elite';
   phone?: string;
+  role?: 'user' | 'admin' | 'owner';
 };
 
 type AuthContextType = {
@@ -25,6 +26,9 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<UserCredential>;
   register: (email: string, password: string, profile: UserProfile) => Promise<void>;
   logout: () => Promise<void>;
+  isAdmin: () => boolean;
+  isOwner: () => boolean;
+  hasAdminAccess: () => boolean;
 };
 
 // Create the auth context
@@ -65,8 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Register function
   const register = async (email: string, password: string, userProfile: UserProfile) => {
+    // Set default role to 'user' if not provided
+    const profile = {
+      ...userProfile,
+      role: userProfile.role || 'user'
+    };
+    
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    await createUserProfile(user.uid, userProfile);
+    await createUserProfile(user.uid, profile);
   };
 
   // Logout function
@@ -76,13 +86,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   };
 
+  // Role check functions
+  const isAdmin = () => {
+    return profile?.role === 'admin';
+  };
+
+  const isOwner = () => {
+    return profile?.role === 'owner';
+  };
+
+  const hasAdminAccess = () => {
+    return profile?.role === 'admin' || profile?.role === 'owner';
+  };
+
   const value = {
     user,
     profile,
     loading,
     login,
     register,
-    logout
+    logout,
+    isAdmin,
+    isOwner,
+    hasAdminAccess
   };
 
   return (

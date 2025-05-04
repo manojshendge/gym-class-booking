@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import Analytics from "@/pages/Analytics";
+import UserProfile from "@/pages/UserProfile";
 import PreLoader from "@/components/PreLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -17,6 +19,8 @@ function Router() {
     <AnimatePresence mode="wait">
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/analytics" component={Analytics} />
+        <Route path="/profile" component={UserProfile} />
         <Route component={NotFound} />
       </Switch>
     </AnimatePresence>
