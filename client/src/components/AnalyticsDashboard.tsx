@@ -139,6 +139,115 @@ const AnalyticsDashboard = () => {
     );
   }
 
+  // Render metrics cards
+  const renderMetricsCards = () => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {Array(4).fill(0).map((_, index) => (
+            <div key={index} className="h-32 bg-[#1A1A1A] rounded-lg animate-pulse"></div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          viewport={{ once: true }}
+        >
+          <Card className="bg-[#1A1A1A] border-[#333]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl">Visitors</CardTitle>
+              <CardDescription>Total website visitors</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{totalVisitors.toLocaleString()}</div>
+              <div className="text-sm text-green-500 flex items-center mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
+                </svg>
+                14.5% from last period
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <Card className="bg-[#1A1A1A] border-[#333]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl">Leads</CardTitle>
+              <CardDescription>Form submissions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{totalLeads.toLocaleString()}</div>
+              <div className="text-sm text-green-500 flex items-center mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
+                </svg>
+                8.2% from last period
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          <Card className="bg-[#1A1A1A] border-[#333]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl">Conversions</CardTitle>
+              <CardDescription>Membership sign-ups</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{totalConversions.toLocaleString()}</div>
+              <div className="text-sm text-green-500 flex items-center mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
+                </svg>
+                12.3% from last period
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <Card className="bg-[#1A1A1A] border-[#333]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl">Conversion Rate</CardTitle>
+              <CardDescription>Lead to member ratio</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{averageConversionRate.toFixed(1)}%</div>
+              <div className="text-sm text-green-500 flex items-center mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
+                </svg>
+                3.5% from last period
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  };
+
   return (
     <section className="py-20 bg-[#121212]" id="analytics">
       <div className="container mx-auto px-4">
@@ -157,21 +266,8 @@ const AnalyticsDashboard = () => {
           </p>
         </motion.div>
 
-        <div className="flex justify-between items-center mb-8">
-          <Tabs defaultValue="conversions" value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
-            <TabsList className="grid grid-cols-3 bg-[#1A1A1A]">
-              <TabsTrigger value="conversions" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
-                Conversions
-              </TabsTrigger>
-              <TabsTrigger value="sources" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
-                Sources
-              </TabsTrigger>
-              <TabsTrigger value="pages" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
-                Page Views
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
+        {/* Period selector */}
+        <div className="flex justify-end mb-8">
           <div className="w-48">
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="bg-[#1A1A1A] border-[#333]">
@@ -188,115 +284,25 @@ const AnalyticsDashboard = () => {
           </div>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {Array(4).fill(0).map((_, index) => (
-              <div key={index} className="h-32 bg-[#1A1A1A] rounded-lg animate-pulse"></div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-[#1A1A1A] border-[#333]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">Visitors</CardTitle>
-                  <CardDescription>Total website visitors</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{totalVisitors.toLocaleString()}</div>
-                  <div className="text-sm text-green-500 flex items-center mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
-                    </svg>
-                    14.5% from last period
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* Metrics cards */}
+        {renderMetricsCards()}
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-[#1A1A1A] border-[#333]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">Leads</CardTitle>
-                  <CardDescription>Form submissions</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{totalLeads.toLocaleString()}</div>
-                  <div className="text-sm text-green-500 flex items-center mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
-                    </svg>
-                    8.2% from last period
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* The Tabs component with TabsContent */}
+        <Tabs defaultValue="conversions" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full max-w-md grid-cols-3 mb-8 bg-[#1A1A1A]">
+            <TabsTrigger value="conversions" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
+              Conversions
+            </TabsTrigger>
+            <TabsTrigger value="sources" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
+              Sources
+            </TabsTrigger>
+            <TabsTrigger value="pages" className="data-[state=active]:bg-[#39FF14] data-[state=active]:text-black">
+              Page Views
+            </TabsTrigger>
+          </TabsList>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-[#1A1A1A] border-[#333]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">Conversions</CardTitle>
-                  <CardDescription>Membership sign-ups</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{totalConversions.toLocaleString()}</div>
-                  <div className="text-sm text-green-500 flex items-center mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
-                    </svg>
-                    12.3% from last period
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-[#1A1A1A] border-[#333]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">Conversion Rate</CardTitle>
-                  <CardDescription>Lead to member ratio</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{averageConversionRate.toFixed(1)}%</div>
-                  <div className="text-sm text-green-500 flex items-center mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0112 7z" clipRule="evenodd" />
-                    </svg>
-                    3.5% from last period
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        )}
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <TabsContent value="conversions" className={activeTab === 'conversions' ? 'block' : 'hidden'}>
+          {/* Conversions Tab Content */}
+          <TabsContent value="conversions">
             <Card className="bg-[#1A1A1A] border-[#333]">
               <CardHeader>
                 <CardTitle>Conversion Metrics Over Time</CardTitle>
@@ -345,7 +351,8 @@ const AnalyticsDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="sources" className={activeTab === 'sources' ? 'block' : 'hidden'}>
+          {/* Sources Tab Content */}
+          <TabsContent value="sources">
             <Card className="bg-[#1A1A1A] border-[#333]">
               <CardHeader>
                 <CardTitle>Traffic Sources</CardTitle>
@@ -390,7 +397,8 @@ const AnalyticsDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="pages" className={activeTab === 'pages' ? 'block' : 'hidden'}>
+          {/* Pages Tab Content */}
+          <TabsContent value="pages">
             <Card className="bg-[#1A1A1A] border-[#333]">
               <CardHeader>
                 <CardTitle>Page Performance</CardTitle>
@@ -443,7 +451,7 @@ const AnalyticsDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
-        </motion.div>
+        </Tabs>
       </div>
     </section>
   );
