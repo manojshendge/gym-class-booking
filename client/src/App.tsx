@@ -10,6 +10,7 @@ import PreLoader from "@/components/PreLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/use-auth";
 import { trackEvent } from "@/lib/firebase";
+import { getEnvVar } from "@/lib/env-utils";
 
 function Router() {
   return (
@@ -28,11 +29,13 @@ function App() {
 
   useEffect(() => {
     // Optional: Wait for fonts and resources to load
-    window.addEventListener('load', () => {
+    const handleLoad = () => {
       // Once everything is loaded, set appReady to true
       // The PreLoader component will handle its own animation timing
       setAppReady(true);
-    });
+    };
+    
+    window.addEventListener('load', handleLoad);
 
     // If window already loaded, set appReady to true
     if (document.readyState === 'complete') {
@@ -40,7 +43,7 @@ function App() {
     }
 
     return () => {
-      window.removeEventListener('load', () => setAppReady(true));
+      window.removeEventListener('load', handleLoad);
     };
   }, []);
 
@@ -48,24 +51,26 @@ function App() {
   useEffect(() => {
     const checkFirebaseConfig = async () => {
       try {
-        const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-        const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+        const apiKey = getEnvVar('VITE_FIREBASE_API_KEY');
+        const projectId = getEnvVar('VITE_FIREBASE_PROJECT_ID');
+        const appId = getEnvVar('VITE_FIREBASE_APP_ID');
 
         if (apiKey && projectId && appId) {
           setFirebaseConfigured(true);
           
-          // Track page view for analytics
-          try {
-            trackEvent('page_view', { page_path: window.location.pathname });
-          } catch (error) {
-            console.warn('Analytics tracking not available');
-          }
+          // Track page view for analytics - with error handling
+          setTimeout(() => {
+            try {
+              trackEvent('page_view', { page_path: window.location.pathname });
+            } catch (error) {
+              console.warn('Analytics tracking error:', error);
+            }
+          }, 2000); // Delay to ensure Firebase is fully initialized
         } else {
           console.warn('Firebase configuration missing. Some features will be unavailable.');
         }
       } catch (error) {
-        console.warn('Firebase initialization error', error);
+        console.warn('Firebase configuration check error:', error);
       }
     };
 

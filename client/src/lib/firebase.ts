@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
@@ -19,9 +19,10 @@ import {
   getDoc,
   setDoc,
   updateDoc,
-  serverTimestamp 
+  serverTimestamp,
+  connectFirestoreEmulator 
 } from "firebase/firestore";
-import { getAnalytics, logEvent } from "firebase/analytics";
+import { getAnalytics, logEvent, isSupported } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,16 +30,45 @@ const firebaseConfig = {
   authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase - ensure only one instance
+let app;
+try {
+  if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
+  }
+} catch (error) {
+  console.error("Firebase initialization error", error);
+  // Fallback to default app initialization
+  app = initializeApp(firebaseConfig);
+}
+
+// Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const analytics = getAnalytics(app);
+
+// Initialize analytics only if supported in the browser
+let analytics: any = null;
+const initAnalytics = async () => {
+  try {
+    if (await isSupported()) {
+      analytics = getAnalytics(app);
+      console.log("Firebase Analytics initialized successfully");
+    }
+  } catch (error) {
+    console.warn("Analytics not supported in this environment:", error);
+  }
+};
+
+// Call analytics initialization but don't wait for it
+initAnalytics().catch(error => {
+  console.warn("Failed to initialize analytics:", error);
+});
+
 export const googleProvider = new GoogleAuthProvider();
 
 // Authentication functions
@@ -120,7 +150,13 @@ export const subscribeToNewsletter = async (email: string, firstName?: string, l
 
 // Analytics tracking
 export const trackEvent = (eventName: string, eventParams?: any) => {
-  logEvent(analytics, eventName, eventParams);
+  if (analytics) {
+    try {
+      logEvent(analytics, eventName, eventParams);
+    } catch (error) {
+      console.warn("Failed to track event:", error);
+    }
+  }
 };
 
 export default app;

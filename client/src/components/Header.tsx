@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-interface HeaderProps {
+export interface HeaderProps {
   onLoginClick?: () => void;
   user?: User | null;
 }
