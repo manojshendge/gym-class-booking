@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
-import { loginWithGoogle } from '@/lib/firebase';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { loginWithGoogle } from "@/lib/firebase";
 
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,37 +21,46 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type AuthModalProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  defaultTab?: 'login' | 'register';
+  defaultTab?: "login" | "register";
 };
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-const registerSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+    role: z.enum(["user", "admin"], {
+      required_error: "Role is required",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
 
-const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) => {
+const AuthModal = ({
+  isOpen,
+  setIsOpen,
+  defaultTab = "login",
+}: AuthModalProps) => {
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
   const { login, register } = useAuth();
   const { toast } = useToast();
@@ -60,8 +69,8 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -69,11 +78,12 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
   const registerForm = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "user", // default role
     },
   });
 
@@ -81,54 +91,58 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
     try {
       await login(values.email, values.password);
       toast({
-        title: 'Login successful',
-        description: 'Welcome back to BEASTMODE Gym!',
+        title: "Login successful",
+        description: "Welcome back to BEASTMODE Gym!",
       });
       setIsOpen(false);
     } catch (error: any) {
       toast({
-        title: 'Login failed',
-        description: error.message || 'Failed to login. Please try again.',
-        variant: 'destructive',
+        title: "Login failed",
+        description: error.message || "Failed to login. Please try again.",
+        variant: "destructive",
       });
     }
   };
 
   const onRegisterSubmit = async (values: RegisterValues) => {
     try {
-      const { firstName, lastName, email, password } = values;
+      const { firstName, lastName, email, password, role } = values;
+      console.log("Registering with role:", role); // <--- Debug log
       await register(email, password, {
         firstName,
         lastName,
         email,
+        role,
       });
       toast({
-        title: 'Registration successful',
-        description: 'Welcome to BEASTMODE Gym!',
+        title: "Registration successful",
+        description: "Welcome to BEASTMODE Gym!",
       });
       setIsOpen(false);
     } catch (error: any) {
       toast({
-        title: 'Registration failed',
-        description: error.message || 'Failed to register. Please try again.',
-        variant: 'destructive',
+        title: "Registration failed",
+        description: error.message || "Failed to register. Please try again.",
+        variant: "destructive",
       });
     }
   };
+  
 
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
       toast({
-        title: 'Login successful',
-        description: 'Welcome to BEASTMODE Gym!',
+        title: "Login successful",
+        description: "Welcome to BEASTMODE Gym!",
       });
       setIsOpen(false);
     } catch (error: any) {
       toast({
-        title: 'Google login failed',
-        description: error.message || 'Failed to login with Google. Please try again.',
-        variant: 'destructive',
+        title: "Google login failed",
+        description:
+          error.message || "Failed to login with Google. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -138,28 +152,44 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
       <DialogContent className="sm:max-w-[425px] bg-[#121212] text-white border-[#333]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            {activeTab === 'login' ? 'Login to Your Account' : 'Create an Account'}
+            {activeTab === "login"
+              ? "Login to Your Account"
+              : "Create an Account"}
           </DialogTitle>
           <DialogDescription className="text-center text-gray-400">
-            {activeTab === 'login'
-              ? 'Access your membership details and bookings'
-              : 'Join BEASTMODE Gym and start your fitness journey'}
+            {activeTab === "login"
+              ? "Access your membership details and bookings"
+              : "Join BEASTMODE Gym and start your fitness journey"}
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs
+          defaultValue={defaultTab}
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
           <TabsList className="grid grid-cols-2 mb-6 bg-[#1A1A1A]">
-            <TabsTrigger value="login" className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white">
+            <TabsTrigger
+              value="login"
+              className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white"
+            >
               Login
             </TabsTrigger>
-            <TabsTrigger value="register" className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white">
+            <TabsTrigger
+              value="register"
+              className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white"
+            >
               Register
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
             <Form {...loginForm}>
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
+              <form
+                onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+                className="space-y-5"
+              >
                 <FormField
                   control={loginForm.control}
                   name="email"
@@ -167,7 +197,11 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="your@email.com" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                        <Input
+                          placeholder="your@email.com"
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -180,13 +214,21 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-[#FF5500] hover:bg-[#FF7730]">
+                <Button
+                  type="submit"
+                  className="w-full bg-[#FF5500] hover:bg-[#FF7730]"
+                >
                   Login
                 </Button>
               </form>
@@ -198,7 +240,9 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                   <span className="w-full border-t border-[#333]"></span>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[#121212] px-2 text-gray-400">Or continue with</span>
+                  <span className="bg-[#121212] px-2 text-gray-400">
+                    Or continue with
+                  </span>
                 </div>
               </div>
 
@@ -233,7 +277,10 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
 
           <TabsContent value="register">
             <Form {...registerForm}>
-              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <form
+                onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={registerForm.control}
@@ -242,7 +289,11 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                       <FormItem>
                         <FormLabel>First Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                          <Input
+                            placeholder="John"
+                            {...field}
+                            className="bg-[#1A1A1A] border-[#333]"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -255,7 +306,11 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                       <FormItem>
                         <FormLabel>Last Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Doe" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                          <Input
+                            placeholder="Doe"
+                            {...field}
+                            className="bg-[#1A1A1A] border-[#333]"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -269,7 +324,11 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="your@email.com" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                        <Input
+                          placeholder="your@email.com"
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -282,7 +341,12 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -295,13 +359,40 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                     <FormItem>
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="bg-[#1A1A1A] border-[#333]" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333]"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-[#FF5500] hover:bg-[#FF7730]">
+                <FormField
+                  control={registerForm.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          className="bg-[#1A1A1A] border-[#333] text-white rounded px-2 py-2 w-full"
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full bg-[#FF5500] hover:bg-[#FF7730]"
+                >
                   Create Account
                 </Button>
               </form>
@@ -313,7 +404,9 @@ const AuthModal = ({ isOpen, setIsOpen, defaultTab = 'login' }: AuthModalProps) 
                   <span className="w-full border-t border-[#333]"></span>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[#121212] px-2 text-gray-400">Or register with</span>
+                  <span className="bg-[#121212] px-2 text-gray-400">
+                    Or register with
+                  </span>
                 </div>
               </div>
 

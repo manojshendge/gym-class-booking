@@ -27,6 +27,8 @@ const Home = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { user } = useAuth();
 
+  
+
   useEffect(() => {
     // Initial check
     checkReveal();
@@ -60,7 +62,8 @@ const Home = () => {
       <Newsletter />
       <Faq />
       <AppPromo />
-      {user && <AnalyticsDashboard />}
+      
+      
       <JoinNow />
       <Footer />
       <CookieBanner />

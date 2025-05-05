@@ -1,17 +1,17 @@
 import { users, type User, type InsertUser } from "@shared/schema";
+import { Role } from "@shared/roles";
 
-// modify the interface with any CRUD methods
-// you might need
-
+// Storage interface
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 }
 
+// In-memory storage implementation
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  currentId: number;
+  private currentId: number;
 
   constructor() {
     this.users = new Map();
@@ -28,9 +28,18 @@ export class MemStorage implements IStorage {
     );
   }
 
+  
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
-    const user: User = { ...insertUser, id };
+
+    const user: User = {
+      id,
+      username: insertUser.username,
+      password: insertUser.password,
+      role: insertUser.role ?? Role.Member, // ✅ default to "member" if role is missing
+    };
+
     this.users.set(id, user);
     return user;
   }

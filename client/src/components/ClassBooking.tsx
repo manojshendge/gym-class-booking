@@ -191,7 +191,7 @@ const ClassBooking = () => {
             <Tabs defaultValue="category" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-2 mb-6 bg-[#1A1A1A]">
                 <TabsTrigger value="category" className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white">
-                  By Category
+                  By Category 
                 </TabsTrigger>
                 <TabsTrigger value="date" className="data-[state=active]:bg-[#FF5500] data-[state=active]:text-white">
                   By Date
